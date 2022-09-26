@@ -13,11 +13,12 @@ const urlStruct = {
     '/style.css': htmlHandler.getCSS,
     '/getUsers': jsonHandler.getUsers,
     '/notReal': jsonHandler.notReal,
+    notFound: jsonHandler.notFound,
   },
   HEAD: {
     '/getUsers': jsonHandler.getUsersMeta,
     '/notReal': jsonHandler.notRealMeta,
-    notFound: jsonHandler.notFound,
+    notFound: jsonHandler.notFoundMeta,
   },
   POST: {
     '/addUser': jsonHandler.addUser,
@@ -53,7 +54,7 @@ const onRequest = (request, response) => {
       urlStruct.GET[parsedUrl](request, response);
     } else {
       // If they go directly to a URL but it's not one handled by GET, then 404
-      urlStruct.HEAD.notFound(request, response);
+      urlStruct.GET.notFound(request, response);
     }
   }
 
@@ -67,10 +68,8 @@ const onRequest = (request, response) => {
     urlStruct[request.method][parsedUrl.pathname](request, response);
   } else {
     // Unaccepted method
-    urlStruct.HEAD.notFound(request, response);
+    urlStruct.GET.notFound(request, response);
   }
-
-  response.end();
 };
 
 http.createServer(onRequest).listen(port, () => {

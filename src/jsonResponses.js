@@ -1,20 +1,17 @@
 const users = {};
 
 const respondJSON = (request, response, status, content) => {
-    console.log(status);
   response.writeHead(status, { 'Content-Type': 'application/json' });
   response.write(JSON.stringify(content));
   response.end();
 };
 
 const respondJSONMeta = (request, response, status) => {
-    console.log("meta");
   response.writeHead(status, { 'Content-Type': 'application/json' });
   response.end();
 };
 
 const getUsers = (request, response) => {
-    console.log("1");
   const responseJSON = {
     users,
   };
@@ -22,12 +19,10 @@ const getUsers = (request, response) => {
 };
 
 const getUsersMeta = (request, response) => {
-    console.log("2");
-  respondJSON(request, response, 200);
+  respondJSONMeta(request, response, 200);
 };
 
 const notReal = (request, response) => {
-    console.log("3");
   const responseJSON = {
     id: 'notFound',
     message: 'The page you are looking for could not be found',
@@ -36,23 +31,27 @@ const notReal = (request, response) => {
 };
 
 const notRealMeta = (request, response) => {
-    console.log("4");
-  respondJSON(request, response, 404);
+  respondJSONMeta(request, response, 404);
 };
 
 const notFound = (request, response) => {
-    console.log("5");
+  const responseJSON = {
+    id: 'notFound',
+    message: 'The page you are looking for could not be found',
+  };
+  respondJSON(request, response, 404, responseJSON);
+};
+
+const notFoundMeta = (request, response) => {
   respondJSONMeta(request, response, 404);
 };
 
 const addUser = (request, response, body) => {
-    console.log("6");
-  const responseJSON = {};
+  const responseJSON = {
+    message: 'Name and age are both required.',
+  };
   let status = 204;
 
-  console.dir(body);
-  console.dir(!body.name);
-  console.dir(body.age);
   if (!body.name || !body.age) {
     responseJSON.id = 'missingParams';
     responseJSON.message = 'Missing name and/or age';
@@ -80,5 +79,6 @@ module.exports = {
   notReal,
   notRealMeta,
   notFound,
+  notFoundMeta,
   addUser,
 };

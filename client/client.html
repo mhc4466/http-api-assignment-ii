@@ -7,7 +7,8 @@
   <script>
     const handleResponse = async (response, doParse) => {
       const content = document.querySelector('#content');
-      console.log(response.status);
+      content.innerHTML = "";
+      
       switch (response.status) {
         case 200:
           content.innerHTML = '<b>Success</b>';
@@ -29,14 +30,16 @@
           break;
       }
       
-      if (doParse) {
+      if (doParse && response.status !== 204) {
         let obj = await response.json();
-
-        let jsonString = JSON.stringify(obj["users"]);
-        content.innerHTML += `<p>${jsonString}</p>`;
-      } else {
-        content.innerHTML += '<p>Metadata received</p>'
-      }
+        console.log(obj);
+        
+        if (response.status === 200) {
+          content.innerHTML += `<p>${JSON.stringify(obj["users"])}</p>`;
+        } else if (response.status !== 204) {
+          content.innerHTML += `<p>Message: ${obj.message}</p>`;
+        }
+      } 
     };
 
     const makePOSTRequest = async (form) => {
@@ -46,7 +49,6 @@
       const ageField = form.querySelector('#ageField');
 
       const data = `name=${nameField.value}&age=${ageField.value}`;
-      console.log(data);
       let response = await fetch(action, {
         method: method,
         headers: {
@@ -56,14 +58,14 @@
         body: data
       });
 
-      handleResponse(response, false);
+      handleResponse(response, true);
     };
 
     const makeRequest = async (form) => {
-    console.log("request");
-      const action = form.getAttribute('action');
-      const method = form.getAttribute('method');
-      console.log(method);
+      const urlField = form.querySelector('#urlField');
+      const methodField = form.querySelector('#methodSelect');
+      let action = urlField.value;
+      let method = methodField.value;
 
       let response = await fetch(action, {
         method: method,
