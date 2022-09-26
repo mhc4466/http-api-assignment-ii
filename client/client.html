@@ -5,7 +5,98 @@
   <link rel="stylesheet" type="text/css" href="/style.css">
   
   <script>
+    const handleResponse = async (response, doParse) => {
+      const content = document.querySelector('#content');
+      console.log(response.status);
+      switch (response.status) {
+        case 200:
+          content.innerHTML = '<b>Success</b>';
+          break;
+        case 201: 
+          content.innerHTML = '<b>Created</b>';
+          break;
+        case 204:
+          content.innerHTML = '<b>Updated (No content)</b>';
+          break;
+        case 400:
+          content.innerHTML = '<b>Bad request</b>';
+          break;
+        case 404:
+          content.innerHTML = '<b>Not found</b>';
+          break;
+        default:
+          content.innerHTML = '<b>Unexpected Error</b>';
+          break;
+      }
+      
+      if (doParse) {
+        let obj = await response.json();
 
+        let jsonString = JSON.stringify(obj["users"]);
+        content.innerHTML += `<p>${jsonString}</p>`;
+      } else {
+        content.innerHTML += '<p>Metadata received</p>'
+      }
+    };
+
+    const makePOSTRequest = async (form) => {
+      const action = form.getAttribute('action');
+      const method = form.getAttribute('method');
+      console.log(method);
+      const nameField = form.querySelector('#nameField');
+      const ageField = form.querySelector('#ageField');
+
+      const data = `name=${nameField.value}&age=${ageField.value}`;
+      console.log(data);
+      let response = await fetch(action, {
+        method: method,
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+          'Accept': 'application/json'
+        },
+        body: data
+      });
+
+      handleResponse(response, false);
+    };
+
+    const makeRequest = async (form) => {
+      const action = form.getAttribute('action');
+      const method = form.getAttribute('method');
+      console.log(method);
+
+      let response = await fetch(action, {
+        method: method,
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+          'Accept': 'application/json'
+        }
+      });
+
+      handleResponse(response, method === 'get');
+    };
+
+    const init = () => {
+      const nameForm = document.querySelector('#nameForm');
+      const userForm = document.querySelector('#userForm');
+
+      const addUser = (e) => {
+        e.preventDefault();
+        makePOSTRequest(nameForm);
+        return false;
+      }
+
+      const requestUser = (e) => {
+        e.preventDefault();
+        makeRequest(userForm);
+        return false;
+      }
+
+      nameForm.addEventListener('submit', addUser);
+      userForm.addEventListener('submit', requestUser);
+    }
+
+    window.onload = init;
   </script>
 </head>
 <body>
