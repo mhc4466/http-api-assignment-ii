@@ -1,6 +1,7 @@
 const users = {};
 
 const respondJSON = (request, response, status, content) => {
+    console.log(status);
   response.writeHead(status, { 'Content-Type': 'application/json' });
   response.write(JSON.stringify(content));
   response.end();

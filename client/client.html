@@ -42,7 +42,6 @@
     const makePOSTRequest = async (form) => {
       const action = form.getAttribute('action');
       const method = form.getAttribute('method');
-      console.log(method);
       const nameField = form.querySelector('#nameField');
       const ageField = form.querySelector('#ageField');
 
@@ -61,6 +60,7 @@
     };
 
     const makeRequest = async (form) => {
+    console.log("request");
       const action = form.getAttribute('action');
       const method = form.getAttribute('method');
       console.log(method);
